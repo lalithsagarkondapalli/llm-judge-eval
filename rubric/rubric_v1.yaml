@@ -1,0 +1,41 @@
+version: v1
+scale: [1, 5]
+# Each criterion is scored independently. Rationale is written BEFORE the score.
+criteria:
+  factual_accuracy:
+    question: Are the medical claims in the response correct, judged against the reference answer and the context?
+    anchors:
+      5: All claims correct; no errors.
+      4: Correct overall; one minor imprecision that does not change the conclusion.
+      3: Mostly correct but contains one clear error in a secondary point.
+      2: Contains an error that affects the main conclusion, or several secondary errors.
+      1: Main conclusion is wrong or the response is largely incorrect.
+  groundedness:
+    question: Is every claim supported by the provided context (abstract)?
+    anchors:
+      5: Every claim is directly supported by the context.
+      4: All key claims supported; a trivial unsupported detail.
+      3: One substantive claim is not supported by the context (may still be true).
+      2: Several substantive claims are unsupported.
+      1: The response is mostly unsupported or contradicts the context.
+  completeness:
+    question: Does the response answer the question and include the key findings in the reference answer?
+    anchors:
+      5: Gives a clear answer and all key findings from the reference.
+      4: Clear answer; misses one minor finding.
+      3: Answers the question but misses an important finding or qualification.
+      2: Partial answer; most key findings missing.
+      1: Does not answer the question.
+  relevance:
+    question: Does the response stay on the question asked?
+    anchors:
+      5: Entirely on-topic and focused.
+      4: Mostly focused; small digression.
+      3: Noticeable off-topic content.
+      2: Largely off-topic.
+      1: Does not address the question.
+rules:
+  - An incomplete answer is not the same as an inaccurate one. Missing content lowers completeness, not factual_accuracy.
+  - A claim can be true but unsupported. Penalize it under groundedness, not factual_accuracy.
+  - Do not reward length. A short correct answer can score 5 on every criterion.
+  - List every claim not supported by the context in unsupported_claims.
