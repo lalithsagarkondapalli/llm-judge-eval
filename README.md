@@ -1,6 +1,8 @@
 # LLM-as-a-Judge Evaluation Framework for Medical QA
 
-Can an LLM judge grade medical answers the way a careful human expert does? This project builds a rubric-based judge for PubMedQA, then validates it against blind human labels using weighted Cohen's κ, a known-error control set, length-bias tests, and an error-taxonomy audit.
+Can an LLM judge grade medical answers the way a careful human expert does? This project builds a rubric-based judge for PubMedQA and the full protocol to validate it against blind human labels: weighted Cohen's κ, a known-error control set, length-bias tests, and an error-taxonomy audit.
+
+> **Status:** the judge, rubric, blind labeling tool and analysis pipeline are built and tested. Human labeling is in progress; results will be published in `results/` when complete.
 
 ## Design
 
@@ -44,14 +46,6 @@ Costs are rough estimates; check your usage dashboard.
 - Score each criterion separately, using `?` to check the anchors whenever you're unsure.
 - Record a note on hard cases. Those notes feed the audit.
 - Do the re-label pass at least a week later, without looking at your first labels.
-
-## After you have results: resume bullets
-
-Fill these in only with the numbers in your `report.md`:
-
-- Built an LLM-as-a-Judge for medical QA (PubMedQA, 400 responses, 4 criteria) with structured JSON outputs; reached quadratic-weighted κ = __ [95% CI __–__] against blind expert labels, versus intra-rater κ = __.
-- Raised judge–human κ from __ to __ by auditing __ disagreements against an error taxonomy and revising the rubric (v1 → v2).
-- Validated error detection on a 100-item injected-error control set: the judge caught __% of known factual errors (humans: __%), with no material length bias (ρ = __).
 
 ## Limitations to state in interviews
 
