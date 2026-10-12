@@ -4,6 +4,15 @@ Can an LLM judge grade medical answers the way a careful human expert does? This
 
 > **Status:** the judge, rubric, blind labeling tool and analysis pipeline are built and tested. Human labeling is in progress; results will be published in `results/` when complete.
 
+## Why this matters for an AI product
+
+Any product that uses an LLM to grade, tag or summarise needs an answer to "how often is it wrong, and in which direction?" before anyone acts on its output. This repo is that answer for one task, built so the same protocol can be reused:
+
+- **The judge can't cheat.** It never sees which condition produced an answer, writes its rationale before its score, and runs at temperature 0 with schema-validated JSON.
+- **Known-error controls.** A quarter of answers have one deliberately injected factual error, so the catch rate is measured, not assumed.
+- **Bias checks.** Length bias and test–retest stability are measured, because LLM judges are known to favour longer answers.
+- **No fitting to the judge.** Rubric versions are compared on the *same* human labels; disagreements go through an error-taxonomy audit to decide what to change.
+
 ## Design
 
 | Component | What it does |
@@ -23,7 +32,7 @@ cp .env.example .env        # add your OpenAI or Azure OpenAI key, then: export 
 python -m judge_eval.data --n 400                                    # ~$1, a few minutes
 python -m judge_eval.judge --rubric rubric/rubric_v1.yaml            # gpt-4o judge, ~$3-6
 python -m judge_eval.judge --rubric rubric/rubric_v1.yaml --repeats 2 --limit 100   # stability
-python -m judge_eval.label                                           # you: ~6-8 h, resumable
+python -m judge_eval.label                                           # human labeller: ~6-8 h, resumable
 python -m judge_eval.analyze --judgments results/judgments_v1_gpt-4o.jsonl
 # >= 7 days later:
 python -m judge_eval.label --relabel 0.2
@@ -47,7 +56,7 @@ Costs are rough estimates; check your usage dashboard.
 - Record a note on hard cases. Those notes feed the audit.
 - Do the re-label pass at least a week later, without looking at your first labels.
 
-## Limitations to state in interviews
+## Limitations
 
 - There's a single human annotator, so judge-vs-human agreement is capped by your own consistency. That's why intra-rater κ is reported.
 - The PubMedQA reference answers are the abstracts' conclusions. They can be incomplete, which the `reference_incomplete` audit category tracks.
